@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run Tracker</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Run Tracker</h1>
+        
+        <div class="stats-panel">
+            <div class="stat">
+                <span class="stat-label">Distance</span>
+                <span class="stat-value" id="distance">0.00 km</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Time</span>
+                <span class="stat-value" id="time">00:00:00</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Pace</span>
+                <span class="stat-value" id="pace">0:00 /km</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Speed</span>
+                <span class="stat-value" id="speed">0.0 km/h</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="startBtn" class="btn btn-primary">Start Run</button>
+            <button id="pauseBtn" class="btn btn-secondary" disabled>Pause</button>
+            <button id="stopBtn" class="btn btn-danger" disabled>Stop</button>
+        </div>
+
+        <div id="map"></div>
+
+        <div class="status" id="status">Press "Start Run" to begin tracking</div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
