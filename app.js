@@ -11,10 +11,13 @@ class RunTracker {
         this.map = null;
         this.routeLine = null;
         this.currentMarker = null;
+        this.youtubePlayer = null;
+        this.playerReady = false;
         
         this.initializeMap();
         this.bindEvents();
         this.updateStats();
+        this.initializeYouTube();
     }
 
     initializeMap() {
@@ -31,6 +34,17 @@ class RunTracker {
         document.getElementById('startBtn').addEventListener('click', () => this.startTracking());
         document.getElementById('pauseBtn').addEventListener('click', () => this.pauseTracking());
         document.getElementById('stopBtn').addEventListener('click', () => this.stopTracking());
+        
+        document.getElementById('loadVideoBtn').addEventListener('click', () => this.loadVideo());
+        document.getElementById('youtubeUrl').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.loadVideo();
+        });
+        
+        document.getElementById('playPauseBtn').addEventListener('click', () => this.togglePlayPause());
+        document.getElementById('rewindBtn').addEventListener('click', () => this.seekVideo(-10));
+        document.getElementById('forwardBtn').addEventListener('click', () => this.seekVideo(10));
+        document.getElementById('volumeDownBtn').addEventListener('click', () => this.adjustVolume(-10));
+        document.getElementById('volumeUpBtn').addEventListener('click', () => this.adjustVolume(10));
     }
 
     startTracking() {
@@ -207,6 +221,97 @@ class RunTracker {
         const statusEl = document.getElementById('status');
         statusEl.textContent = message;
         statusEl.className = `status status-${type}`;
+    }
+
+    initializeYouTube() {
+        window.onYouTubeIframeAPIReady = () => {
+            this.playerReady = true;
+        };
+    }
+
+    extractVideoId(url) {
+        const patterns = [
+            /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+            /youtube\.com\/watch\?.*v=([^&\n?#]+)/
+        ];
+        
+        for (const pattern of patterns) {
+            const match = url.match(pattern);
+            if (match) return match[1];
+        }
+        return null;
+    }
+
+    loadVideo() {
+        const urlInput = document.getElementById('youtubeUrl');
+        const videoId = this.extractVideoId(urlInput.value);
+        
+        if (!videoId) {
+            this.updateStatus('Invalid YouTube URL', 'error');
+            return;
+        }
+        
+        document.getElementById('videoContainer').style.display = 'block';
+        
+        if (this.youtubePlayer) {
+            this.youtubePlayer.loadVideoById(videoId);
+        } else {
+            this.youtubePlayer = new YT.Player('youtubePlayer', {
+                height: '315',
+                width: '100%',
+                videoId: videoId,
+                playerVars: {
+                    'playsinline': 1,
+                    'rel': 0,
+                    'modestbranding': 1
+                },
+                events: {
+                    'onStateChange': (event) => this.onPlayerStateChange(event)
+                }
+            });
+        }
+        
+        urlInput.value = '';
+        this.updateStatus('Video loaded successfully', 'success');
+    }
+
+    onPlayerStateChange(event) {
+        const playIcon = document.querySelector('.play-icon');
+        const pauseIcon = document.querySelector('.pause-icon');
+        
+        if (event.data === YT.PlayerState.PLAYING) {
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = 'inline';
+        } else {
+            playIcon.style.display = 'inline';
+            pauseIcon.style.display = 'none';
+        }
+    }
+
+    togglePlayPause() {
+        if (!this.youtubePlayer) return;
+        
+        const state = this.youtubePlayer.getPlayerState();
+        if (state === YT.PlayerState.PLAYING) {
+            this.youtubePlayer.pauseVideo();
+        } else {
+            this.youtubePlayer.playVideo();
+        }
+    }
+
+    seekVideo(seconds) {
+        if (!this.youtubePlayer) return;
+        
+        const currentTime = this.youtubePlayer.getCurrentTime();
+        this.youtubePlayer.seekTo(currentTime + seconds, true);
+    }
+
+    adjustVolume(change) {
+        if (!this.youtubePlayer) return;
+        
+        const currentVolume = this.youtubePlayer.getVolume();
+        const newVolume = Math.max(0, Math.min(100, currentVolume + change));
+        this.youtubePlayer.setVolume(newVolume);
     }
 }
 

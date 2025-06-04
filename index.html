@@ -39,9 +39,32 @@
         <div id="map"></div>
 
         <div class="status" id="status">Press "Start Run" to begin tracking</div>
+
+        <div class="video-section">
+            <h2>Entertainment</h2>
+            <div class="video-input-group">
+                <input type="text" id="youtubeUrl" placeholder="Paste YouTube URL here" class="video-input">
+                <button id="loadVideoBtn" class="btn btn-primary">Load Video</button>
+            </div>
+            
+            <div id="videoContainer" class="video-container" style="display: none;">
+                <div id="youtubePlayer"></div>
+                <div class="video-controls">
+                    <button id="playPauseBtn" class="video-btn">
+                        <span class="play-icon">▶️</span>
+                        <span class="pause-icon" style="display: none;">⏸️</span>
+                    </button>
+                    <button id="rewindBtn" class="video-btn">⏪ 10s</button>
+                    <button id="forwardBtn" class="video-btn">10s ⏩</button>
+                    <button id="volumeDownBtn" class="video-btn">🔉</button>
+                    <button id="volumeUpBtn" class="video-btn">🔊</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="app.js"></script>
 </body>
 </html>
